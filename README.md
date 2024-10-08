@@ -3,6 +3,61 @@
 ## Overview
 This guide outlines the API endpoints and data structures for the Django Family Project. As a frontend engineer, you'll be interacting with these endpoints to create and retrieve family records.
 
+
+
+## Features
+
+- Create Parent and Child records
+
+- Uses Factory pattern for object creation
+
+- PostgreSQL database integration
+
+## Prerequisites
+
+- Python 3.8 or higher
+
+- Git
+
+- PostgreSQL
+
+## Setup
+
+1. Clone the repository:
+
+   ```
+
+   git clone https://github.com/IbLahlou/atlas-innovator-backend-ild.git
+
+   cd atlas-innovator-backend-ild
+
+   ```
+
+2. Create and activate a virtual environment:
+
+   ```
+
+   python -m venv venv
+
+   source venv/bin/activate  # On Windows, use venv\Scripts\activate
+
+   ```
+
+3. Install dependencies:
+
+   ```
+
+   pip install -r requirements.txt
+
+   ```
+
+4. Configure PostgreSQL database in settings.py
+
+5. Run migrations: python manage.py migrate
+
+6. Create superuser: python manage.py createsuperuser
+
+
 ## API Endpoints
 
 ### 1. Create Family
