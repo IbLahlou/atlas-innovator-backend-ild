@@ -1,161 +1,89 @@
-# Django Backend for Atlas Innovators (v1)
+# 🌐 Atlas Innovator ALLAM LLM - Arabic Language Intelligence API
 
-## Overview
-This guide outlines the API endpoints and data structures for the Django Family Project. As a frontend engineer, you'll be interacting with these endpoints to create and retrieve family records.
+## 🧠 Project Overview
 
+This project provides an API using **BentoML** to serve an Arabic **Language Learning Model (LLM)**. The API generates child-friendly scenarios in Arabic based on input preferences, level, and a phrase. The model output is in **XML format**, which is converted to **JSON** for easier consumption.
 
+---
 
-## Features
+## 📁 Repository Structure
 
-- Create Parent and Child records
+```
+atlas-innovator-allam-llm/
+├── bentofile.yaml         # BentoML configuration for building the service
+├── service.py             # API definition using BentoML
+├── requirements.txt       # Python dependencies
+├── models.py              # Model loading and saving to BentoML
+└── README.md              # Project documentation
+```
 
-- Uses Factory pattern for object creation
+---
 
-- PostgreSQL database integration
+## 🚀 API Overview
 
-## Prerequisites
+### Endpoint: `/generate_scenario`
 
-- Python 3.8 or higher
+- **Method**: `POST`
+- **Input**: JSON
+- **Output**: JSON (Scenario in Arabic)
+- **Description**: Generates an Arabic scenario based on child preferences, level, and a phrase.
 
-- Git
+### Example Input:
 
-- PostgreSQL
-
-## Setup
-
-1. Clone the repository:
-
-   ```
-
-   git clone https://github.com/IbLahlou/atlas-innovator-backend-ild.git
-
-   cd atlas-innovator-backend-ild
-
-   ```
-
-2. Create and activate a virtual environment:
-
-   ```
-
-   python -m venv venv
-
-   source venv/bin/activate  # On Windows, use venv\Scripts\activate
-
-   ```
-
-3. Install dependencies:
-
-   ```
-
-   pip install -r requirements.txt
-
-   ```
-
-4. Configure PostgreSQL database in settings.py
-
-5. Run migrations: python manage.py migrate
-
-6. Create superuser: python manage.py createsuperuser
-
-
-## API Endpoints
-
-### 1. Create Family
-- **URL:** `/create_family/`
-- **Method:** POST
-- **Data Params:**
-  ```json
-  {
-    "parent": {
-      "first_name": "string",
-      "last_name": "string",
-      "age": integer
-    },
-    "child": {
-      "first_name": "string",
-      "last_name": "string",
-      "age": integer,
-      "score": integer,
-      "level": integer
-    }
-  }
-  ```
-- **Success Response:**
-  - **Code:** 201
-  - **Content:** `{ "message": "Family created successfully", "parent_id": integer, "child_id": integer }`
-
-### 2. Get Family
-- **URL:** `/family/<int:parent_id>/`
-- **Method:** GET
-- **Success Response:**
-  - **Code:** 200
-  - **Content:** 
-    ```json
-    {
-      "parent": {
-        "id": integer,
-        "first_name": "string",
-        "last_name": "string",
-        "age": integer,
-        "child_id": integer
-      },
-      "child": {
-        "id": integer,
-        "first_name": "string",
-        "last_name": "string",
-        "age": integer,
-        "score": integer,
-        "level": integer
-      }
-    }
-    ```
-
-## Data Models
-
-### Parent
-- id: Integer
-- first_name: String
-- last_name: String
-- age: Integer
-- child_id: Integer (Foreign Key to Child)
-
-### Child
-- id: Integer
-- first_name: String
-- last_name: String
-- age: Integer
-- score: Integer
-- level: Integer
-- parent_id: Integer (Foreign Key to Parent)
-
-## Implementation Notes
-1. Use a state management solution (e.g., Redux, MobX) to store family data fetched from the API.
-2. Implement form validation on the frontend before sending data to the API.
-3. Handle API errors gracefully and display user-friendly error messages.
-4. Consider implementing a loading state while waiting for API responses.
-
-## Example API Usage (JavaScript)
-```javascript
-// Creating a family
-async function createFamily(parentData, childData) {
-  const response = await fetch('/create_family/', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ parent: parentData, child: childData }),
-  });
-  return response.json();
-}
-
-// Fetching a family
-async function getFamily(parentId) {
-  const response = await fetch(`/family/${parentId}/`);
-  return response.json();
+```json
+{
+  "preferences": "السيارات والألوان",
+  "level": "مبتدئ",
+  "phrase": "سيارة حمراء تسير بسرعة"
 }
 ```
 
-## Next Steps
-1. Implement a user interface for creating and viewing families.
-2. Add error handling and loading states in your frontend application.
-3. Consider adding authentication to protect these endpoints.
+### Example Output:
+
+```json
+{
+  "scenario": {
+    "background": "في يوم مشمس، كان هناك سيارة حمراء تسير بسرعة كبيرة...",
+    "characters": ["طفل", "سيارة"],
+    "lesson": "السائق الجيد هو الذي يحترم إشارات المرور."
+  }
+}
+```
+
+---
+
+## 🚀 Getting Started
+
+1. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Save the model to BentoML's model store**:
+   ```bash
+   python models.py
+   ```
+
+3. **Run the BentoML service**:
+   ```bash
+   bentoml serve service.py:svc --reload
+   ```
+
+4. **Test the service**:
+   ```bash
+   curl -X POST "http://127.0.0.1:3000/generate_scenario" \
+   -H "Content-Type: application/json" \
+   -d '{"preferences": "السيارات والألوان", "level": "مبتدئ", "phrase": "سيارة حمراء تسير بسرعة"}'
+   ```
+
+---
+
+## 🧑‍💻 API Input/Output Details
+
+### Input (JSON):
+- **preferences**: Child's preferences (e.g., cars, colors).
+- **level**: Child's learning level (e.g., beginner).
+- **phrase**: A phrase in Arabic that will help generate the scenario.
+
+### Output (JSON):
+- **scenario**: A generated scenario in Arabic, converted from the model's XML output.
