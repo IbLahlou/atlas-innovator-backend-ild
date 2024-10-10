@@ -2,3 +2,4 @@ bentoml
 transformers 
 torch 
 xmltodict
+langchain
