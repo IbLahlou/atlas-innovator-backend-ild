@@ -1,13 +1,11 @@
 # 🌐 Atlas Innovator ALLAM LLM - Arabic Language Intelligence API
 
 ## 🧠 Project Overview
-
-This project provides an API using **BentoML** to serve an Arabic **Language Learning Model (LLM)**. The API generates child-friendly scenarios in Arabic based on input preferences, level, and a phrase. The model output is in **XML format**, which is converted to **JSON** for easier consumption.
+This project provides an API using **BentoML** to serve an Arabic **Language Learning Model (LLM)**. The API generates child-friendly content in Arabic based on input topic, age, preferences, and language level. The model output is in Markdown format, which is then returned as part of a JSON response.
 
 ---
 
 ## 📁 Repository Structure
-
 ```
 atlas-innovator-allam-llm/
 ├── bentofile.yaml         # BentoML configuration for building the service
@@ -21,31 +19,32 @@ atlas-innovator-allam-llm/
 
 ## 🚀 API Overview
 
-### Endpoint: `/generate_scenario`
-
+### Endpoint: `/generate_content`
 - **Method**: `POST`
 - **Input**: JSON
-- **Output**: JSON (Scenario in Arabic)
-- **Description**: Generates an Arabic scenario based on child preferences, level, and a phrase.
+- **Output**: JSON (Content in Arabic with Markdown formatting)
+- **Description**: Generates Arabic content based on topic, child's age, preferences, and language level.
 
 ### Example Input:
-
 ```json
 {
-  "preferences": "السيارات والألوان",
-  "level": "مبتدئ",
-  "phrase": "سيارة حمراء تسير بسرعة"
+  "topic": "الطبيعة في فصل الربيع",
+  "age": 10,
+  "preference": "القصص الخيالية",
+  "level": "متوسط"
 }
 ```
 
 ### Example Output:
-
 ```json
 {
-  "scenario": {
-    "background": "في يوم مشمس، كان هناك سيارة حمراء تسير بسرعة كبيرة...",
-    "characters": ["طفل", "سيارة"],
-    "lesson": "السائق الجيد هو الذي يحترم إشارات المرور."
+  "markdown_content": "# الطبيعة في فصل الربيع\n\n[Generated content in Arabic...]\n\n## الأسئلة\n\n1. [First question...]\n2. [Second question...]\n3. [Third question...]\n\n---\n- نوع المحتوى: قصة قصيرة\n- الفئة العمرية: 10 سنوات\n- التفضيل: القصص الخيالية\n- المستوى اللغوي: متوسط",
+  "metadata": {
+    "topic": "الطبيعة في فصل الربيع",
+    "age": 10,
+    "preference": "القصص الخيالية",
+    "level": "متوسط",
+    "content_type": "قصة قصيرة"
   }
 }
 ```
@@ -71,9 +70,9 @@ atlas-innovator-allam-llm/
 
 4. **Test the service**:
    ```bash
-   curl -X POST "http://127.0.0.1:3000/generate_scenario" \
+   curl -X POST "http://127.0.0.1:3000/generate_content" \
    -H "Content-Type: application/json" \
-   -d '{"preferences": "السيارات والألوان", "level": "مبتدئ", "phrase": "سيارة حمراء تسير بسرعة"}'
+   -d '{"topic": "الطبيعة في فصل الربيع", "age": 10, "preference": "القصص الخيالية", "level": "متوسط"}'
    ```
 
 ---
@@ -81,9 +80,33 @@ atlas-innovator-allam-llm/
 ## 🧑‍💻 API Input/Output Details
 
 ### Input (JSON):
-- **preferences**: Child's preferences (e.g., cars, colors).
-- **level**: Child's learning level (e.g., beginner).
-- **phrase**: A phrase in Arabic that will help generate the scenario.
+- **topic**: The main subject of the content (e.g., "الطبيعة في فصل الربيع").
+- **age**: Child's age (e.g., 10).
+- **preference**: Child's content preference (e.g., "القصص الخيالية").
+- **level**: Child's Arabic language level (e.g., "متوسط").
 
 ### Output (JSON):
-- **scenario**: A generated scenario in Arabic, converted from the model's XML output.
+- **markdown_content**: Generated content in Arabic with Markdown formatting.
+- **metadata**: Information about the generated content, including the input parameters and the type of content generated.
+
+---
+
+## 🎨 Content Types
+
+The API can generate various types of content, including:
+- Short stories
+- Factual information
+- Dialogues
+- Imaginative descriptions
+
+The content type is randomly selected for each request to provide variety.
+
+---
+
+## 📚 Educational Features
+
+- **Age-appropriate content**: The generated content is tailored to suit the specified age group.
+- **Preference-aligned**: Content aligns with the child's stated preferences.
+- **Language level adaptation**: The complexity of the language adjusts based on the specified Arabic language level.
+- **Engaging questions**: Each piece of content includes three thought-provoking questions to encourage engagement and comprehension.
+
