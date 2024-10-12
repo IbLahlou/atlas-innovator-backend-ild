@@ -2,6 +2,16 @@ import bentoml
 from bentoml.io import JSON
 import torch
 import re
+from pydantic import BaseModel, Field
+
+# Define input and output models for Swagger
+class InputData(BaseModel):
+    topic: str = Field(default="الطبيعة في فصل الربيع", description="The topic for paragraph generation")
+    max_length: int = Field(default=1050, description="Maximum length of the generated text")
+
+class OutputData(BaseModel):
+    markdown_content: str = Field(description="Generated paragraph and questions in Markdown format")
+    topic: str = Field(description="The topic used for generation")
 
 arabic_llm = bentoml.transformers.get("arabic_llm_scenario_generator:latest")
 runner = arabic_llm.to_runner()
@@ -16,16 +26,25 @@ def clean_text(text):
     text = re.sub(r'\s+', ' ', text).strip()
     return text
 
-@svc.api(input=JSON(), output=JSON())
-async def generate_paragraph_with_questions(input_data: dict) -> dict:
-    topic = input_data.get("topic", "الطبيعة في فصل الربيع")
-    max_length = input_data.get("max_length", 1050)
+@svc.api(input=JSON(pydantic_model=InputData), output=JSON(pydantic_model=OutputData))
+async def generate_paragraph_with_questions(input_data: InputData) -> OutputData:
+    """
+    Generate an Arabic paragraph and questions based on a given topic.
 
+    This endpoint creates a paragraph in Modern Standard Arabic about the provided topic,
+    followed by three questions related to the content. The output is formatted in Markdown.
+
+    Args:
+        input_data (InputData): The input data containing the topic and maximum length.
+
+    Returns:
+        OutputData: The generated paragraph and questions in Markdown format, along with the original topic.
+    """
+    topic = input_data.topic
+    max_length = input_data.max_length
     prompt = f"""اكتب فقرة موجزة ودقيقة باللغة العربية الفصحى عن الموضوع التالي: {topic}
     بعد كتابة الفقرة، قم بإنشاء ثلاثة أسئلة موجزة ومختلفة حول محتوى الفقرة. تأكد من أن الأسئلة متنوعة وتغطي جوانب مختلفة من الموضوع.
-
     الفقرة:"""
-
     tokenizer = arabic_llm.custom_objects["tokenizer"]
     inputs = tokenizer(prompt, return_tensors="pt")
     
@@ -72,20 +91,17 @@ async def generate_paragraph_with_questions(input_data: dict) -> dict:
     
     # Format as Markdown
     markdown_output = f"""# {topic}
-
 {paragraph}
-
 ## الأسئلة
-
 1. {questions[0]}
 2. {questions[1]}
 3. {questions[2]}
 """
     
-    return {
-        "markdown_content": markdown_output,
-        "topic": topic
-    }
+    return OutputData(
+        markdown_content=markdown_output,
+        topic=topic
+    )
 
 # To start the service, run:
 # bentoml serve service:svc --reload
